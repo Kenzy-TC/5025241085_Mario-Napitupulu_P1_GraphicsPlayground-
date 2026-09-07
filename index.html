@@ -3,67 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Graphics Playground</title>
+    <title>Graphics Playground - Praktikum 1</title>
+
     <style>
-        body {
-            display: flex;
-            flex-direction: column; /* Mengubah layout jadi numpuk atas-bawah */
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        :root {
+            --bg-color: #1b1f2a;
+            --card-bg: #252b3b;
+            --text-main: #ffffff;
+            --text-muted: #a0aabf;
+            --accent: #3498db;
+        }
+
+        * {
             margin: 0;
-            background-color: #ecf0f1;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            box-sizing: border-box;
         }
-        /* Style untuk panel kontrol FPS */
-        .controls {
-            margin-bottom: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--text-main);
+            font-size: 28px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        header h2 {
+            color: var(--accent);
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 400;
         }
-        select {
-            font-size: 16px;
-            padding: 5px;
-            border-radius: 5px;
-            cursor: pointer;
+
+        /* Styling Info Mahasiswa */
+        .info-container {
+            display: flex;
+            gap: 20px;
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+            max-width: 800px;
+            width: 100%;
+            justify-content: space-around;
         }
+
+        .student {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: center;
+        }
+
+        .student p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .student span {
+            color: var(--text-main);
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Styling Area Canvas */
+        .canvas-wrapper {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
         canvas {
-            background-color: #ffffff;
-            border: 2px solid #2c3e50;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background: #ffffff;
+            border-radius: 6px;
+            display: block;
             cursor: crosshair;
+        }
+
+        /* Styling Instruksi Kontrol */
+        .controls {
+            margin-top: 25px;
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls h3 {
+            color: var(--accent);
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .controls ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .controls li {
+            color: var(--text-muted);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .controls li::before {
+            content: "🎮";
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        kbd {
+            background: #3a4156;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace;
+            margin: 0 4px;
+            border: 1px solid #4a5570;
         }
     </style>
 </head>
 <body>
 
-    <!-- UI Kontrol -->
-    <div class="controls">
-        <label for="fpsSelector">Batas FPS: </label>
-        <select id="fpsSelector">
-            <option value="0">Max</option>
-            <option value="60">60 FPS</option>
-            <option value="30">30 FPS</option>
-            <option value="15">15 FPS</option>
-            <option value="5">5 FPS</option>
-        </select>
+    <header>
+        <h1>Graphics Playground</h1>
+        <h2>Praktikum 1 Grafika Komputer</h2>
+    </header>
 
-        <!-- [BARU] Pilihan Mode Trail -->
-        <label for="trailSelector" style="margin-left: 20px;">Efek Jejak (Trail): </label>
-        <select id="trailSelector">
-            <option value="none">Tidak Ada </option>
-            <option value="fading">Semi</option>
-            <option value="permanent">Permanen</option>
-        </select>
+    <div class="info-container">
+        <div class="student">
+            <p>Nama: <span>Mario Napitupulu</span></p>
+            <p>NIM: <span>5025241085</span></p>
+        </div>
+        <div class="student">
+            <p>Nama: <span>Nathanael Oliver Amadhika Yuswana</span></p>
+            <p>NIM: <span>5025241109</span></p>
+        </div>
     </div>
 
-    <canvas id="graphicsCanvas" width="800" height="500"></canvas>
+    <div class="canvas-wrapper">
+        <canvas id="graphicsCanvas" width="800" height="500"></canvas>
+    </div>
+
+    <div class="controls">
+        <h3>Petunjuk Interaksi</h3>
+        <ul>
+            <li>Gunakan <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> atau Panah untuk bergerak.</li>
+            <li>Tekan <kbd>R</kbd> untuk mereset posisi Player.</li>
+            <li>Klik kiri Canvas / Tekan <kbd>C</kbd> untuk ganti warna Player.</li>
+            <li>Gerakkan Mouse untuk melihat efek follower.</li>
+        </ul>
+    </div>
 
     <script src="app.js"></script>
-    
 </body>
 </html>
