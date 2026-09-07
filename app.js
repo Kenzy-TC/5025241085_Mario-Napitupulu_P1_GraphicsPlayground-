@@ -32,6 +32,7 @@ const player = { x: 600, y: 350, width: 50, height: 50, speed: 5, color: "#e67e2
 // Data input & interaksi
 const mouse = { x: 0, y: 0 };
 const keys = {};
+let isPaused = false; // Penanda untuk status pause
 
 // Challenge 34.1 & Challenge C: Click Data
 const spawnedCircles = []; 
@@ -159,16 +160,27 @@ canvas.addEventListener("click", function() {
 });
 
 window.addEventListener("keydown", function(event) {
-    const controlledKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "w", "a", "s", "d"];
+    const controlledKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "w", "a", "s", "d", " "]; 
     if (controlledKeys.includes(event.key)) {
-        event.preventDefault(); // Mencegah scrolling browser
+        event.preventDefault(); // Mencegah layar ke-scroll saat tekan spasi atau panah
     }
     keys[event.key] = true;
 
-    // Reset posisi
+    // [SPASI] untuk Pause / Resume
+    if (event.key === " " && !event.repeat) {
+        isPaused = !isPaused; // Membalik status dari true ke false, atau sebaliknya
+    }
+
+    // [R] untuk Reset posisi Player
     if (event.key.toLowerCase() === "r" && !event.repeat) {
         player.x = 600;
         player.y = 350;
+    }
+
+    // [C] untuk Ganti Warna Player
+    if (event.key.toLowerCase() === "c" && !event.repeat) {
+        playerColorIndex = (playerColorIndex + 1) % colors.length;
+        player.color = colors[playerColorIndex];
     }
 });
 
@@ -180,17 +192,25 @@ window.addEventListener("keyup", function(event) {
 function animate() {
     clearCanvas();
     
-    // Update State
-    updateMovingBalls();
-    updatePlayer();
+    // Objek hanya bergerak JIKA sedang tidak di-pause
+    if (!isPaused) {
+        updateMovingBalls();
+        updatePlayer();
+    }
     
-    // Render Frame Baru
+    // Proses render/menggambar tetap jalan terus
     drawSpawnedCircles(); 
     drawPrimitives();
     drawMovingBalls();
     drawPlayer();
     drawMouseCoordinate();
     drawMouseFollower();
+    
+    if (isPaused) {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Teks transparan
+        ctx.font = "40px Arial";
+        ctx.fillText("PAUSED", canvas.width / 2 - 75, canvas.height / 2);
+    }
     
     requestAnimationFrame(animate);
 }
