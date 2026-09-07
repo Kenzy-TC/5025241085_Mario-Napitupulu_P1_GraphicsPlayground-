@@ -21,22 +21,23 @@ const staticTriangle = { v0: {x: 120, y: 300}, v1: {x: 50, y: 400}, v2: {x: 190,
 
 // Challenge 34.3: Multiple Moving Objects & Challenge A: Bouncing Object
 const movingBalls = [
-    { x: 400, y: 100, radius: 25, speedX: 3, speedY: 2, color: "#3498db" },
-    { x: 500, y: 250, radius: 15, speedX: -4, speedY: 3, color: "#e74c3c" },
-    { x: 300, y: 400, radius: 20, speedX: 2, speedY: -4, color: "#f1c40f" }
+    { x: 400, y: 100, radius: 25, speedX: 3, speedY: 2, color: "#3498db" }
 ];
 
 // Challenge D: Keyboard Movement
 const player = { x: 600, y: 350, width: 50, height: 50, speed: 5, color: "#e67e22" };
 
-// Data input & interaksi
+// Input State
 const mouse = { x: 0, y: 0 };
 const keys = {};
 let isPaused = false; // Penanda untuk status pause
 
+// Slingshot State
+let isDragging = false;
+const dragStart = { x: 0, y: 0 };
+
 // Challenge 34.1 & Challenge C: Click Data
-const spawnedCircles = []; 
-const colors = ["#9b59b6", "#e74c3c", "#2ecc71", "#f1c40f", "#3498db", "#ff9ff3"];
+const colors = ["#9b59b6", "#e74c3c", "#2ecc71", "#f1c40f", "#3498db", "#ff9ff3", "#00d2d3", "#ff6b6b"];
 let playerColorIndex = 0;
 
 // Canvas
@@ -80,15 +81,6 @@ function drawMovingBalls() {
     }
 }
 
-function drawSpawnedCircles() {
-    for (const circle of spawnedCircles) {
-        ctx.beginPath();
-        ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = circle.color;
-        ctx.fill();
-    }
-}
-
 function drawPlayer() {
     ctx.fillStyle = player.color;
     ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -101,27 +93,50 @@ function drawMouseCoordinate() {
     ctx.fillText(`Mouse: (${Math.round(mouse.x)}, ${Math.round(mouse.y)})`, 20, 30);
 }
 
-// Challenge B: Follow Mouse
-function drawMouseFollower() {
-    ctx.beginPath();
-    ctx.arc(mouse.x, mouse.y, 8, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+// Menggambar efek tarikan ketapel
+function drawSlingshot() {
+    if (isDragging) {
+        // Tali ketapel
+        ctx.beginPath();
+        ctx.moveTo(dragStart.x, dragStart.y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]); // Bikin garis putus-putus
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset garis ke normal
+
+        // Bayangan bola yang mau ditembak
+        ctx.beginPath();
+        ctx.arc(dragStart.x, dragStart.y, 15, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(155, 89, 182, 0.5)";
+        ctx.fill();
+    }
 }
 
-// Update Functions
+
 function updateMovingBalls() {
     for (const ball of movingBalls) {
         ball.x += ball.speedX;
         ball.y += ball.speedY;
         
         // Memantul jika mengenai batas canvas
+        let bounced = false;
+
+        // Deteksi tabrakan horizontal
         if (ball.x + ball.radius >= canvas.width || ball.x - ball.radius <= 0) {
             ball.speedX *= -1;
+            bounced = true;
         }
+        // Deteksi tabrakan vertikal
         if (ball.y + ball.radius >= canvas.height || ball.y - ball.radius <= 0) {
             ball.speedY *= -1;
+            bounced = true;
+        }
+
+        // Kalau mantul, ganti warna secara acak!
+        if (bounced) {
+            ball.color = colors[Math.floor(Math.random() * colors.length)];
         }
     }
 }
@@ -138,45 +153,60 @@ function updatePlayer() {
     player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
 }
 
-// input & event 
+
+// 1. Mouse Bergerak
 canvas.addEventListener("mousemove", function(event) {
     const rect = canvas.getBoundingClientRect();
     mouse.x = (event.clientX - rect.left) * (canvas.width / rect.width);
     mouse.y = (event.clientY - rect.top) * (canvas.height / rect.height);
 });
 
-canvas.addEventListener("click", function() {
-    // Challenge C: Click untuk ubah warna objek (Player)
-    playerColorIndex = (playerColorIndex + 1) % colors.length;
-    player.color = colors[playerColorIndex];
+// 2. Klik Mouse Ditahan (Mulai narik ketapel)
+canvas.addEventListener("mousedown", function(event) {
+    if (isPaused) return; // Kalau lagi di-pause, gabisa nembak
+    isDragging = true;
+    dragStart.x = mouse.x;
+    dragStart.y = mouse.y;
+});
 
-    // Challenge 34.1: Click untuk menambah lingkaran baru di posisi mouse
-    spawnedCircles.push({
-        x: mouse.x,
-        y: mouse.y,
-        radius: Math.random() * 15 + 10, // Radius acak antara 10 - 25
-        color: colors[Math.floor(Math.random() * colors.length)] // Warna acak
-    });
+// 3. Klik Mouse Dilepas (Nembak bola!)
+canvas.addEventListener("mouseup", function(event) {
+    if (isDragging) {
+        isDragging = false;
+        
+        // Kalkulasi kekuatan & arah tembakan (mirip Angry Birds)
+        const powerMultiplier = 0.05; 
+        const velocityX = (dragStart.x - mouse.x) * powerMultiplier;
+        const velocityY = (dragStart.y - mouse.y) * powerMultiplier;
+
+        // Bikin bola baru dan masukkan ke dalam canvas
+        movingBalls.push({
+            x: dragStart.x,
+            y: dragStart.y,
+            radius: Math.random() * 15 + 10, // Radius 10 s/d 25
+            speedX: velocityX,
+            speedY: velocityY,
+            color: colors[Math.floor(Math.random() * colors.length)]
+        });
+    }
 });
 
 window.addEventListener("keydown", function(event) {
-    const controlledKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "w", "a", "s", "d", " "]; 
+    const controlledKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "w", "a", "s", "d", " "];
     if (controlledKeys.includes(event.key)) {
-        event.preventDefault(); // Mencegah layar ke-scroll saat tekan spasi atau panah
+        event.preventDefault(); 
     }
     keys[event.key] = true;
 
     // [SPASI] untuk Pause / Resume
     if (event.key === " " && !event.repeat) {
-        isPaused = !isPaused; // Membalik status dari true ke false, atau sebaliknya
+        isPaused = !isPaused; 
     }
-
     // [R] untuk Reset posisi Player
     if (event.key.toLowerCase() === "r" && !event.repeat) {
         player.x = 600;
         player.y = 350;
     }
-
     // [C] untuk Ganti Warna Player
     if (event.key.toLowerCase() === "c" && !event.repeat) {
         playerColorIndex = (playerColorIndex + 1) % colors.length;
@@ -199,21 +229,20 @@ function animate() {
     }
     
     // Proses render/menggambar tetap jalan terus
-    drawSpawnedCircles(); 
     drawPrimitives();
     drawMovingBalls();
     drawPlayer();
     drawMouseCoordinate();
-    drawMouseFollower();
+    drawSlingshot(); // Menampilkan garis ketapel pas lagi ditarik
     
     if (isPaused) {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Teks transparan
-        ctx.font = "40px Arial";
-        ctx.fillText("PAUSED", canvas.width / 2 - 75, canvas.height / 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; 
+        ctx.font = "bold 40px Arial";
+        ctx.fillText("PAUSED", canvas.width / 2 - 80, canvas.height / 2);
     }
     
     requestAnimationFrame(animate);
 }
 
-// Start Aplikasi
+// Start
 animate();
