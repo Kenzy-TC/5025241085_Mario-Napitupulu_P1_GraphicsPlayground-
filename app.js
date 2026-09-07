@@ -1,57 +1,37 @@
-/*
-Praktikum Grafika Komputer - Pertemuan 1
-Graphics Playground
-Nama : Mario Napitupulu
-NRP  : 5025241085
-Kelas: Grafika Komputer B
-Challenge: 1
-Nama : Nathanael 
-NRP  :
-Kelas: Grafika Komputer B
-Challenge: 1
-*/
-
 const canvas = document.getElementById("graphicsCanvas");
 const ctx = canvas.getContext("2d");
 
 
-// Primitive Statis 
 const rectangle = { x: 50, y: 150, width: 140, height: 90, color: "#8e44ad" };
 const staticTriangle = { v0: {x: 120, y: 300}, v1: {x: 50, y: 400}, v2: {x: 190, y: 400}, color: "#16a085", stroke: "#000" };
 
-// Challenge 34.3: Multiple Moving Objects & Challenge A: Bouncing Object
+// Bola-bola yang memantul
 const movingBalls = [
     { x: 400, y: 100, radius: 25, speedX: 3, speedY: 2, color: "#3498db" }
 ];
 
-// Challenge D: Keyboard Movement
 const player = { x: 600, y: 350, width: 50, height: 50, speed: 5, color: "#e67e22" };
 
 // Input State
 const mouse = { x: 0, y: 0 };
 const keys = {};
-let isPaused = false; // Penanda untuk status pause
+let isPaused = false; 
 
 // Slingshot State
 let isDragging = false;
 const dragStart = { x: 0, y: 0 };
 
-// Challenge 34.1 & Challenge C: Click Data
 const colors = ["#9b59b6", "#e74c3c", "#2ecc71", "#f1c40f", "#3498db", "#ff9ff3", "#00d2d3", "#ff6b6b"];
 let playerColorIndex = 0;
 
-// Canvas
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// Drawing Functions
 function drawPrimitives() {
-    // 1. Rectangle
     ctx.fillStyle = rectangle.color;
     ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
-    // 2. Line
     ctx.beginPath();
     ctx.moveTo(300, 50);
     ctx.lineTo(450, 150);
@@ -59,7 +39,6 @@ function drawPrimitives() {
     ctx.lineWidth = 4;
     ctx.stroke();
 
-    // 3. Triangle
     ctx.beginPath();
     ctx.moveTo(staticTriangle.v0.x, staticTriangle.v0.y);
     ctx.lineTo(staticTriangle.v1.x, staticTriangle.v1.y);
@@ -86,7 +65,6 @@ function drawPlayer() {
     ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
-// Challenge E: Mouse Coordinate
 function drawMouseCoordinate() {
     ctx.fillStyle = "#222";
     ctx.font = "16px Arial";
@@ -120,7 +98,6 @@ function updateMovingBalls() {
         ball.x += ball.speedX;
         ball.y += ball.speedY;
         
-        // Memantul jika mengenai batas canvas
         let bounced = false;
 
         // Deteksi tabrakan horizontal
@@ -142,13 +119,11 @@ function updateMovingBalls() {
 }
 
 function updatePlayer() {
-    // Mendukung Arrow Keys ATAU W, A, S, D
     if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
     if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
     if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
     if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
 
-    // Batas pergerakan agar tidak keluar canvas
     player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
     player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
 }
@@ -191,6 +166,7 @@ canvas.addEventListener("mouseup", function(event) {
     }
 });
 
+// Event Keyboard (Masih sesuai setup sebelumnya)
 window.addEventListener("keydown", function(event) {
     const controlledKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "w", "a", "s", "d", " "];
     if (controlledKeys.includes(event.key)) {
@@ -198,16 +174,13 @@ window.addEventListener("keydown", function(event) {
     }
     keys[event.key] = true;
 
-    // [SPASI] untuk Pause / Resume
     if (event.key === " " && !event.repeat) {
         isPaused = !isPaused; 
     }
-    // [R] untuk Reset posisi Player
     if (event.key.toLowerCase() === "r" && !event.repeat) {
         player.x = 600;
         player.y = 350;
     }
-    // [C] untuk Ganti Warna Player
     if (event.key.toLowerCase() === "c" && !event.repeat) {
         playerColorIndex = (playerColorIndex + 1) % colors.length;
         player.color = colors[playerColorIndex];
@@ -218,17 +191,15 @@ window.addEventListener("keyup", function(event) {
     keys[event.key] = false;
 });
 
-// Animation loop
+
 function animate() {
     clearCanvas();
     
-    // Objek hanya bergerak JIKA sedang tidak di-pause
     if (!isPaused) {
         updateMovingBalls();
         updatePlayer();
     }
     
-    // Proses render/menggambar tetap jalan terus
     drawPrimitives();
     drawMovingBalls();
     drawPlayer();
