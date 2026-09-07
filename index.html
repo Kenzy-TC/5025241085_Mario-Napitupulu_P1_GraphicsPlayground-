@@ -7,24 +7,62 @@
     <style>
         body {
             display: flex;
+            flex-direction: column; /* Mengubah layout jadi numpuk atas-bawah */
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #ecf0f1;
+            font-family: Arial, sans-serif;
+        }
+        /* Style untuk panel kontrol FPS */
+        .controls {
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            font-weight: bold;
+        }
+        select {
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
         }
         canvas {
             background-color: #ffffff;
             border: 2px solid #2c3e50;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            cursor: crosshair; /* Kursor berubah jadi tanda plus biar pas sama tema koordinat */
+            cursor: crosshair;
         }
     </style>
 </head>
 <body>
-    //Ukuran canvas
+
+    <!-- UI Kontrol -->
+    <div class="controls">
+        <label for="fpsSelector">Batas FPS: </label>
+        <select id="fpsSelector">
+            <option value="0">Max</option>
+            <option value="60">60 FPS</option>
+            <option value="30">30 FPS</option>
+            <option value="15">15 FPS</option>
+            <option value="5">5 FPS</option>
+        </select>
+
+        <!-- [BARU] Pilihan Mode Trail -->
+        <label for="trailSelector" style="margin-left: 20px;">Efek Jejak (Trail): </label>
+        <select id="trailSelector">
+            <option value="none">Tidak Ada </option>
+            <option value="fading">Semi</option>
+            <option value="permanent">Permanen</option>
+        </select>
+    </div>
+
     <canvas id="graphicsCanvas" width="800" height="500"></canvas>
-    //link ke file JavaScript
+
     <script src="app.js"></script>
     
 </body>
