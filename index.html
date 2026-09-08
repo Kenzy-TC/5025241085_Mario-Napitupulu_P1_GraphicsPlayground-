@@ -321,6 +321,69 @@
             box-shadow: 0 0 40px rgba(212, 175, 55, 0.08);
         }
 
+        .instructions {
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            padding: 30px 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: var(--accent-gold);
+            filter: blur(60px);
+            opacity: 0.15;
+            border-radius: 50%;
+        }
+
+        .instructions h3 {
+            color: var(--accent-gold);
+            font-size: 15px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .instructions li {
+            color: var(--text-main);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        code, kbd, kbd.inline {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold-light);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Consolas', monospace;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            margin: 0 3px;
+        }
+
         .report-section {
             background: var(--bg-panel);
             backdrop-filter: var(--glass-blur);
@@ -364,67 +427,6 @@
             font-weight: 700;
             color: var(--text-main);
             letter-spacing: 0.5px;
-        }
-
-        .instructions {
-            background: var(--bg-panel);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            padding: 30px 40px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 800px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .instructions::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 100px;
-            height: 100px;
-            background: var(--accent-gold);
-            filter: blur(60px);
-            opacity: 0.15;
-            border-radius: 50%;
-        }
-
-        .instructions h3 {
-            color: var(--accent-gold);
-            font-size: 15px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instructions ul {
-            list-style: none;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .instructions li {
-            color: var(--text-main);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
-
-        code, kbd.inline {
-            background: rgba(212, 175, 55, 0.1);
-            color: var(--accent-gold-light);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-family: 'Consolas', monospace;
-            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .readme-grid {
@@ -598,7 +600,6 @@
         .c-5 { --card-accent: #c0392b; } 
         .c-6 { --card-accent: #ffb142; } 
         .c-7 { --card-accent: #cd6133; } 
-
     </style>
 </head>
 <body>
@@ -834,7 +835,6 @@
                     </div>
                 </div>
             </section>
-
         </div>
     </main>
 
