@@ -160,7 +160,7 @@ function drawCircle() {
 
     ctx.arc(650, 120, 60, 0, Math.PI * 2);
 
-    ctx.fillStyle = "#c1cc2e";
+    ctx.fillStyle = "#2ecc2e";
     ctx.fill();
 }
 
@@ -293,14 +293,11 @@ function resetApp() {
 
     // Reset posisi dan warna bola kembali ke awal (1 bola)
     movingBalls = [
-        {
-            x: 350,
-            y: 300,
-            radius: 25,
-            speedX: 2,
-            speedY: 2,
-            color: "#9b59b6"
-        }
+        {x: 350, y: 300, radius: 25, speedX: 10, speedY: 2, color: "#ff51c2"},
+        { x: 150, y: 150, radius: 15, speedX: -3, speedY: 2, color: "#e74c3c" },
+        { x: 500, y: 100, radius: 20, speedX: 4, speedY: -1, color: "#20ee00" },
+        { x: 200, y: 400, radius: 30, speedX: -2, speedY: -3, color: "#f1c40f" },
+        { x: 600, y: 250, radius: 18, speedX: 1, speedY: 4, color: "#3498db" }
     ];
 
     isPaused = false;
