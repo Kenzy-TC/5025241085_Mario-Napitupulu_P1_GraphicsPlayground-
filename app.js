@@ -1,3 +1,26 @@
+/*
+Praktikum Grafika Komputer - Pertemuan 1
+Graphics Playground
+
+Nama : Mario Napitupulu
+NRP  : 5025241085
+Kelas: B
+
+Nama : Nathanael Oliver Amadhika Yuswana
+NRP  : 5025241109
+Kelas: B
+
+Challenge: 
+- A: Bouncing Object
+- B: Follow Mouse
+- C: Click to Change Color
+- D: Keyboard Movement
+- E: Mouse Coordinate
+- Click to Create Circle
+- Trail Mode
+- Multiple Moving Objects
+*/
+
 const canvas = document.getElementById("graphicsCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -5,35 +28,35 @@ const ctx = canvas.getContext("2d");
 // DATA
 // --------------------------------------------------
 
+// Data Rectangle
 const rectangle = {
     x: 80,
     y: 80,
     width: 160,
     height: 100,
-    color: "#3498db"
+    color: "#dbdb34"
 };
 
-// Data bola dibuat fleksibel (karena akan direset)
+// Data dari kelima bola yang bergerak, masing-masing memiliki posisi, radius, kecepatan, dan warna
 let movingBalls = [
-    {
-        x: 350,
-        y: 300,
-        radius: 25,
-        speedX: 2,
-        speedY: 2,
-        color: "#9b59b6"
-    }
+    {x: 350, y: 300, radius: 25, speedX: 10, speedY: 2, color: "#ff51c2"},
+    { x: 150, y: 150, radius: 15, speedX: -3, speedY: 2, color: "#e74c3c" },
+    { x: 500, y: 100, radius: 20, speedX: 4, speedY: -1, color: "#20ee00" },
+    { x: 200, y: 400, radius: 30, speedX: -2, speedY: -3, color: "#f1c40f" },
+    { x: 600, y: 250, radius: 18, speedX: 1, speedY: 4, color: "#3498db" }
 ];
 
+// Data Player
 const player = {
     x: 600,
     y: 350,
     width: 50,
     height: 50,
     speed: 5,
-    color: "#e67e22"
+    color: "#e62222"
 };
 
+// Data Mouse
 const mouse = {
     x: 0,
     y: 0
@@ -41,6 +64,7 @@ const mouse = {
 
 const keys = {};
 
+// Data Warna untuk Lingkaran dan Player
 const colors = [
     "#9b59b6",
     "#e74c3c",
@@ -92,15 +116,12 @@ function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     } 
     else if (trailMode === "fading") {
-        // PERBAIKAN: Menggunakan 'destination-out' untuk mengikis (erase) pixel
-        // Ini akan menghilangkan warna secara matematis tanpa sisa/ghosting
         ctx.globalCompositeOperation = "destination-out";
         
         // Semakin besar nilai alpha (0.1), semakin cepat jejaknya hilang
         ctx.fillStyle = "rgba(255, 255, 255, 0.1)"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Wajib dikembalikan ke 'source-over' (mode gambar normal)
         ctx.globalCompositeOperation = "source-over";
     } 
     else if (trailMode === "permanent") {
@@ -124,29 +145,38 @@ function drawRectangle() {
 
 function drawLine() {
     ctx.beginPath();
+
     ctx.moveTo(300, 80);
     ctx.lineTo(500, 180);
+
     ctx.strokeStyle = "#e74c3c";
     ctx.lineWidth = 5;
+
     ctx.stroke();
 }
 
 function drawCircle() {
     ctx.beginPath();
+
     ctx.arc(650, 120, 60, 0, Math.PI * 2);
-    ctx.fillStyle = "#2ecc71";
+
+    ctx.fillStyle = "#c1cc2e";
     ctx.fill();
 }
 
 function drawTriangle() {
     ctx.beginPath();
+
     ctx.moveTo(150, 300);
     ctx.lineTo(80, 430);
     ctx.lineTo(220, 430);
+
     ctx.closePath();
-    ctx.fillStyle = "#f39c12";
+
+    ctx.fillStyle = "#5f2aff";
     ctx.fill();
-    ctx.strokeStyle = "#8a5705";
+    
+    ctx.strokeStyle = "#05128a";
     ctx.lineWidth = 3;
     ctx.stroke();
 }
@@ -192,10 +222,8 @@ function drawSpawnedCircles() {
 }
 
 function drawFPS() {
-    // 1. Bersihkan area kecil khusus untuk teks FPS
     ctx.clearRect(canvas.width - 100, 10, 100, 30);
 
-    // 2. Baru gambar teksnya
     ctx.fillStyle = "#e74c3c";
     ctx.font = "bold 16px Arial";
     ctx.fillText(`FPS: ${fps}`, canvas.width - 90, 30);
@@ -213,6 +241,7 @@ function drawPauseScreen() {
 // UPDATE
 // --------------------------------------------------
 
+// Fungsi Update Bola Bergerak
 function updateMovingBall() {
     for (const ball of movingBalls) {
         ball.x += ball.speedX;
@@ -220,6 +249,7 @@ function updateMovingBall() {
 
         let bounced = false;
 
+        // Cek tabrakan dengan dinding canvas
         if (ball.x + ball.radius >= canvas.width || ball.x - ball.radius <= 0) {
             ball.speedX *= -1;
             bounced = true;
@@ -237,17 +267,20 @@ function updateMovingBall() {
     }
 }
 
+// Fungsi Update Player
 function updatePlayer() {
+    // Update posisi player berdasarkan input keyboard (WASD atau Arrow Keys)
     if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
     if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
     if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
     if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
 
+    // Batasi posisi player agar tidak keluar dari canvas
     player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
     player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
 }
 
-// FUNGSI HARD RESET
+// Fungsi Reset
 function resetApp() {
     // Kembalikan posisi dan warna player
     player.x = 600;
@@ -270,10 +303,8 @@ function resetApp() {
         }
     ];
 
-    // Matikan pause jika sedang aktif
     isPaused = false;
 
-    // Paksa layar dibersihkan (penting kalau sedang pakai mode Trail Permanen)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -281,6 +312,7 @@ function resetApp() {
 // INPUT
 // --------------------------------------------------
 
+// Event Mouse Move: Update posisi mouse
 canvas.addEventListener("mousemove", function(event) {
     const rect = canvas.getBoundingClientRect();
     mouse.x = (event.clientX - rect.left) * (canvas.width / rect.width);
@@ -298,8 +330,12 @@ canvas.addEventListener("click", function(event) {
         radius: Math.random() * 15 + 10,
         color: colors[Math.floor(Math.random() * colors.length)]
     });
+
+    colorIndex = (colorIndex + 1) % colors.length;
+    player.color = colors[colorIndex];
 });
 
+// Event Keyboard: Untuk Kontrol Player dan Fungsi Lainnya
 window.addEventListener("keydown", function(event) {
     const controlledKeys = [
         "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
@@ -313,7 +349,7 @@ window.addEventListener("keydown", function(event) {
     // State-based:
     keys[event.key] = true;
 
-    // Event-based (diskrit):
+    // Event-based:
     // C - Ganti Warna Player
     if (event.key.toLowerCase() === "c" && !event.repeat) {
         colorIndex = (colorIndex + 1) % colors.length;
@@ -325,7 +361,7 @@ window.addEventListener("keydown", function(event) {
         resetApp();
     }
 
-    // SPASI - Pause Toggle
+    // Spasi - Pause Toggle
     if (event.key === " " && !event.repeat) {
         isPaused = !isPaused;
     }
@@ -339,6 +375,7 @@ window.addEventListener("keyup", function(event) {
 // ANIMATION LOOP
 // --------------------------------------------------
 
+// Fungsi utama untuk animasi dan rendering
 function animate(timestamp) {
     requestAnimationFrame(animate);
 
