@@ -291,9 +291,9 @@ function resetApp() {
     // Hapus semua lingkaran tambahan
     spawnedCircles = [];
 
-    // Reset posisi dan warna bola kembali ke awal (1 bola)
+    // Reset posisi dan warna bola kembali ke awal
     movingBalls = [
-        {x: 350, y: 300, radius: 25, speedX: 10, speedY: 2, color: "#ff51c2"},
+        { x: 350, y: 300, radius: 25, speedX: 10, speedY: 2, color: "#ff51c2"},
         { x: 150, y: 150, radius: 15, speedX: -3, speedY: 2, color: "#e74c3c" },
         { x: 500, y: 100, radius: 20, speedX: 4, speedY: -1, color: "#20ee00" },
         { x: 200, y: 400, radius: 30, speedX: -2, speedY: -3, color: "#f1c40f" },
@@ -353,7 +353,7 @@ window.addEventListener("keydown", function(event) {
         player.color = colors[colorIndex];  
     }
 
-    // R - Reset Keseluruhan (Memanggil fungsi resetApp)
+    // R - Reset Keseluruhan
     if (event.key.toLowerCase() === "r" && !event.repeat) {
         resetApp();
     }
@@ -382,7 +382,7 @@ function animate(timestamp) {
     // Logika Throttling FPS
     if (targetFPS > 0) {
         const elapsed = timestamp - then;
-        if (elapsed < fpsInterval) return; // Skip frame jika terlalu cepat
+        if (elapsed < fpsInterval) return; 
         then = timestamp - (elapsed % fpsInterval);
     }
 
